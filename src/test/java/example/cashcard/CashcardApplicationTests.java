@@ -38,4 +38,10 @@ class CashCardApplicationTests {
 		assertThat(response.getBody()).isBlank();
 	}
 
+	@Test
+	void shouldNotCreateANewCashCard() {
+		CashCard newCashCard = new CashCard(null, 250.00);
+		ResponseEntity<Void> createResponse = restTemplate.postForEntity("/cashcards", newCashCard, void.class);
+		assertThat(createResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+	}
 }
