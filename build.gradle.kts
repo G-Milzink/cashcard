@@ -40,7 +40,7 @@ tasks.test {
         showCauses = true
         showStackTraces = true
 
-        // Change to `true` for more verbose test output
+        // Change to 'true' for more verbose test output
         showStandardStreams = false
     }
 }
