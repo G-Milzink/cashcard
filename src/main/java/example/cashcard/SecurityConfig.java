@@ -18,11 +18,11 @@ class SecurityConfig {
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .authorizeHttpRequests(request -> request
-                .requestMatchers("/cashcards/**")
-                .authenticated())
-            .httpBasic(Customizer.withDefaults())
-            .csrf(csrf -> csrf.disable());
+                .authorizeHttpRequests(request -> request
+                        .requestMatchers("/cashcards/**")
+                        .hasRole("CARD-OWNER")) // enable RBAC: Replace the .authenticated() call with the hasRole(...) call.
+                .httpBasic(Customizer.withDefaults())
+                .csrf(csrf -> csrf.disable());
         return http.build();
     }
 
@@ -30,4 +30,24 @@ class SecurityConfig {
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+    @Bean
+    UserDetailsService testOnlyUsers(PasswordEncoder passwordEncoder) {
+        User.UserBuilder users = User.builder();
+
+        UserDetails sarah = users
+                .username("sarah1")
+                .password(passwordEncoder.encode("abc123"))
+                .roles("CARD-OWNER")
+                .build();
+
+        UserDetails hankOwnsNoCards = users
+                .username("hank-owns-no-cards")
+                .password(passwordEncoder.encode("qrs456"))
+                .roles("NON-OWNER")
+                .build();
+
+        return new InMemoryUserDetailsManager(sarah, hankOwnsNoCards);
+    }
+
 }
